@@ -10,10 +10,12 @@ const port = 3000;
 
 import homeRota from "./Routes/home";
 import Lancamento from "./Routes/Lancamento";
+import Consolidado from "./Routes/Consolidado";
 import { JWTDecode } from "./Middleware/JWTDecode";
 
 app.use("/", homeRota);
 app.use("/lancamento", JWTDecode("Caixa"), Lancamento);
+app.use("/consolidado", JWTDecode("Caixa"), Consolidado);
 
 app.listen(port, () => {
   console.log(`🙌😎 Servidor HTTP rodando porta: ${port} 👌`);
