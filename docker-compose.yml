@@ -15,7 +15,7 @@ services:
   nodejs:
     image: node:hydrogen-slim
     command: >
-      sh -c "npm run build && npm start"
+      sh -c "npm run criarTabelas && npm run build && npm start"
     working_dir: /usr/src/app
     environment:
       POSTGRES_PASSWORD: "admin"

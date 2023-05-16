@@ -8,7 +8,10 @@ export const JWTDecode = (clienteRota: string) => {
         criacao: number;
         expiracao: number;
         cliente: string;
-      };     
+      }; 
+      console.log(JWTDecode.expiracao);
+      console.log(Date.now());
+          
       if (JWTDecode.expiracao > Date.now()) {
         if (JWTDecode.cliente === clienteRota) {
           next();

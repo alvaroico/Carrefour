@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc -b",
-    "start": "node ./build/index.js"
+    "start": "node ./build/index.js",
+    "criarTabelas":"ts-node-dev src/CreateTabelas.ts"
   },
   "repository": {
     "type": "git",
