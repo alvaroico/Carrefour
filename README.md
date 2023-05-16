@@ -37,6 +37,8 @@ Crédito), também precisa de um relatório que disponibilize o saldo diário co
 # Requisitos técnicos:
 
 * Desenho da solução
+
+![Diagrama](/anexos/Diagrama.jpg)
 * Pode ser feito na linguagem que voc e domina:
   * Foi feito em JavaScript(ECMAScript)
 * Boas praticas são bem vindas (Design Patterns, padrões de Arquitetura, SOLID e etc)
