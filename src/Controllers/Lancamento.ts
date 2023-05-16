@@ -1,98 +1,92 @@
 import { Request, Response, NextFunction } from "express";
 import { PoolPostgreSQL, QueryResult } from "../connection/PostgreSQL";
-import { contacts } from "../interfaces/Macapa";
+import { lancamentos } from "../interfaces/Lancamentos";
 
-const Debito = async (
+const DebitoCredito = async (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
-  const { contacts } = request.body as { contacts: Array<contacts> };
-
-  if (contacts != undefined && contacts.length > 0) {
-    let dadosInseridos = false;
-    for await (const dadoContacts of contacts) {
-      await PoolPostgreSQL(`INSERT INTO public.contacts
-      (nome, celular)
-      VALUES('${dadoContacts.name}', '${dadoContacts.cellphone}')`)
-        .then((result) => {
-          const PoolPostgreSQLRetorno = result as QueryResult;
-          if (
-            PoolPostgreSQLRetorno.rowCount == 0 &&
-            PoolPostgreSQLRetorno.rowCount == undefined
-          ) {
-            response.status(400).json({
-              message: `Erro ao Salvar no PoolPostgreSQL ${PoolPostgreSQLRetorno}`,
-            });
-          } else {
-            dadosInseridos = true;
-          }
-        })
-        .catch((error) => {
-          dadosInseridos = false;
-          response.status(400).json({
-            message: `Erro ao Salvar no PoolPostgreSQL ${error}`,
-          });
-        });
-    }
-    if (dadosInseridos) {
-      response.status(200).json({
-        message: "Contatos Cadastrados",
-      });
-    }
-  } else {
-    response.status(400).json({
-      message: "Contatos não informados",
+  const { conta, valor, tipo } = request.body as lancamentos;
+  if (isNaN(conta)) {
+    return response.status(400).json({
+      message: "Conta inválida",
     });
   }
-};
 
-const Credito = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  const { contacts } = request.body as { contacts: Array<contacts> };
+  if (isNaN(valor)) {
+    return response.status(400).json({
+      message: "Valor inválida",
+    });
+  }
 
-  if (contacts != undefined && contacts.length > 0) {
-    let dadosInseridos = false;
-    for await (const dadoContacts of contacts) {
-      await PoolPostgreSQL(`INSERT INTO public.contacts
-      (nome, celular)
-      VALUES('${dadoContacts.name}', '${dadoContacts.cellphone}')`)
-        .then((result) => {
-          const PoolPostgreSQLRetorno = result as QueryResult;
-          if (
-            PoolPostgreSQLRetorno.rowCount == 0 &&
-            PoolPostgreSQLRetorno.rowCount == undefined
-          ) {
-            response.status(400).json({
-              message: `Erro ao Salvar no PoolPostgreSQL ${PoolPostgreSQLRetorno}`,
-            });
-          } else {
-            dadosInseridos = true;
-          }
-        })
-        .catch((error) => {
-          dadosInseridos = false;
+  if (["Debito", "Credito"].includes(tipo) === false) {
+    return response.status(400).json({
+      message: "Tipo inválida",
+    });
+  }
+
+  let dadosInseridos = false;
+  if (tipo === "Debito") {
+    await PoolPostgreSQL(`INSERT INTO public.debito
+      (conta, valor, created_at)
+      VALUES(${conta}, ${valor}, now());`)
+      .then((result) => {
+        const PoolPostgreSQLRetorno = result as QueryResult;
+        if (
+          PoolPostgreSQLRetorno.rowCount == 0 &&
+          PoolPostgreSQLRetorno.rowCount == undefined
+        ) {
           response.status(400).json({
-            message: `Erro ao Salvar no PoolPostgreSQL ${error}`,
+            message: `Erro ao Salvar no PoolPostgreSQL ${PoolPostgreSQLRetorno}`,
           });
+        } else {
+          dadosInseridos = true;
+        }
+      })
+      .catch((error) => {
+        dadosInseridos = false;
+        response.status(400).json({
+          message: `Erro ao Salvar no PoolPostgreSQL ${error}`,
         });
-    }
+      });
     if (dadosInseridos) {
       response.status(200).json({
-        message: "Contatos Cadastrados",
+        message: "Debito Cadastrado",
       });
     }
-  } else {
-    response.status(400).json({
-      message: "Contatos não informados",
-    });
+  }
+  if (tipo === "Credito") {
+    await PoolPostgreSQL(`INSERT INTO public.credito
+      (conta, valor, created_at)
+      VALUES(${conta}, ${valor}, now());`)
+      .then((result) => {
+        const PoolPostgreSQLRetorno = result as QueryResult;
+        if (
+          PoolPostgreSQLRetorno.rowCount == 0 &&
+          PoolPostgreSQLRetorno.rowCount == undefined
+        ) {
+          response.status(400).json({
+            message: `Erro ao Salvar no PoolPostgreSQL ${PoolPostgreSQLRetorno}`,
+          });
+        } else {
+          dadosInseridos = true;
+        }
+      })
+      .catch((error) => {
+        dadosInseridos = false;
+        response.status(400).json({
+          message: `Erro ao Salvar no PoolPostgreSQL ${error}`,
+        });
+      });
+    if (dadosInseridos) {
+      response.status(200).json({
+        message: "Credito Cadastrado",
+      });
+    }
   }
 };
 
 export default {
-  Debito: Debito,
-  Credito: Credito,
+  DebitoCredito: DebitoCredito,
 };
