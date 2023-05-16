@@ -47,6 +47,8 @@ Crédito), também precisa de um relatório que disponibilize o saldo diário co
   docker compose up -d
   ```
 
-  ![comando docker compo up -d](/anexos/Carrefour.gif)
+http://localhost/docs
+
+![comando docker compo up -d](/anexos/Carrefour.gif)
   
 * Hospedar em repositório publico (GitHub)
